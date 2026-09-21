@@ -19,6 +19,16 @@ new class extends Component
         $this->remember = (bool) old('remember');
     }
 
+    /**
+     * Valida un campo al salir de él, incluso si quedó vacío.
+     */
+    public function validateField(string $field): void
+    {
+        if (array_key_exists($field, $this->rules())) {
+            $this->validateOnly($field);
+        }
+    }
+
     protected function rules(): array
     {
         return [
@@ -43,7 +53,7 @@ new class extends Component
     @csrf
 
     <flux:input
-        wire:model.live.blur="email"
+        wire:model="email" wire:blur="validateField('email')"
         name="email"
         :label="__('Email address')"
         type="email"
@@ -54,7 +64,7 @@ new class extends Component
 
     <div class="relative">
         <flux:input
-            wire:model.live.blur="password"
+            wire:model="password" wire:blur="validateField('password')"
             name="password"
             :label="__('Password')"
             type="password"
