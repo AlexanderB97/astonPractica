@@ -19,6 +19,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property int $id
  * @property string $name
  * @property string $email
+ * @property string $role
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $two_factor_secret
@@ -28,12 +29,16 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_DOCENTE = 'docente';
+    public const ROLE_ESTUDIANTE = 'estudiante';
 
     /**
      * Get the attributes that should be cast.
@@ -48,6 +53,21 @@ class User extends Authenticatable implements PasskeyUser
         ];
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function isDocente(): bool
+    {
+        return $this->role === self::ROLE_DOCENTE;
+    }
+
+    public function isEstudiante(): bool
+    {
+        return $this->role === self::ROLE_ESTUDIANTE;
+    }
+
     /**
      * Get the user's initials
      */
@@ -59,4 +79,4 @@ class User extends Authenticatable implements PasskeyUser
             ? Str::substr($initials, 0, 1).Str::substr($initials, -1)
             : $initials;
     }
-}
+};
